@@ -138,7 +138,6 @@ void free_table(Table *t) {
 }
 
 int main() {
-
     srand(time(NULL));
     Table *t = alloc_table(5);
     if (!t) {
