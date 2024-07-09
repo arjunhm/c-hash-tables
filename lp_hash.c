@@ -41,7 +41,6 @@ Table *alloc_table(int size) {
     t->size = size;
     t->items = malloc(sizeof(Item) * t->size);
     if (!t->items) {
-        free(t);
         return NULL;
     }
 
@@ -68,10 +67,8 @@ Item *generate_item() {
 
 int hash(Table *t, Item *item) {
     int sum = 0;
-	char *p = item->key;
-    while (*p != '\0'){    
-		sum += (int)*p++;
-	}
+    for (int i = 0; i < strlen(item->key); i++)
+        sum += (int)item->key[i];
 
     return sum % t->size;
 }
@@ -148,6 +145,6 @@ int main() {
     }
 
     print_table(t);
-    free_table(t);
+    // free_table(t);
     return 1;
 }
