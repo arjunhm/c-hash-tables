@@ -18,7 +18,7 @@ lp:
 	$(CC) $(CFLAGS) -o $(LP_OPFILE) $(LP_IPFILE)
 
 val_lp:
-	valgrind --leak-check=full ./$(LP_OPFILE)
+	valgrind --track-origins=yes --leak-check=full ./$(LP_OPFILE)
 
 all_lp:
 	make clean

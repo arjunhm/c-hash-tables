@@ -37,13 +37,13 @@ int generate_int(int max) { return (rand() % max) + 1; }
 Table *alloc_table(int size) {
     Table *t = calloc(1, sizeof(Table));
     if (!t) {
-		printf("alloc failed\n");
         return NULL;
 	}
 
     t->size = size;
-    t->items = malloc(sizeof(Item) * t->size);
+    t->items = calloc(1, sizeof(Item) * size);
     if (!t->items) {
+		free(t);
         return NULL;
     }
 
@@ -69,25 +69,23 @@ Item *generate_item() {
 }
 
 int hash(Table *t, Item *item) {
-    /*
-        int sum = 0;
+    
+    int sum = 0;
     char *p = item->key;
     while (*p != '\0')
        sum += *p++;
         return sum % t->size;
-        */
-
-    return item->value % t->size;
+    //return item->value % t->size;
 }
 
 bool linear_probe(Item *items, int size, Item *item, int idx) {
-    int i, c = 0;
+    int i = 0, c = 0;
     while (i < size) {
         idx = idx % size;
         if (items[idx].key == NULL) {
             items[idx].key = item->key;
             items[idx].value = item->value;
-            printf("%d collisions for %s\n", c, item->key);
+            //printf("%d collisions for %s\n", c, item->key);
             return true;
         }
         c++;
@@ -104,7 +102,7 @@ void resize(Table *t) {
     t->size *= 2;
 
     // create new *items
-    Item *new_items = malloc(sizeof(Item) * t->size);
+    Item *new_items = calloc(1, sizeof(Item) * t->size);
     if (!new_items)
         return;
 
@@ -116,6 +114,7 @@ void resize(Table *t) {
     }
 
     // assign new items to table
+	free(t->items);
     t->items = new_items;
 }
 
@@ -125,14 +124,18 @@ bool insert(Table *t, Item *item) {
 
     bool result = linear_probe(t->items, t->size, item, idx);
     if (result == false) {
-        printf("----\nresizing\n-----\n");
         resize(t);
         insert(t, item);
     }
     return true;
 }
 
-void free_table(Table *t) { free(t); }
+void free_table(Table *t) {
+	for (int i = 0; i < t->size; i++) 
+		free(t->items[i].key);
+	free(t->items);
+	free(t); 
+}
 
 int main() {
 
@@ -142,19 +145,16 @@ int main() {
         printf("failed");
         return 1;
     }
-    Item *item;
-    //item->key = malloc(sizeof(char));
-	item = generate_item();
-	print_item(item);
-	insert(t, item);
-    // int n = 25;
-    // for (int i = 0; i < n; i++) {
-    // item = generate_item();
-    //   insert(t, item);
-    // free(item);
-    //}
+	Item *item;
+    
+    int n = 25;
+    for (int i = 0; i < n; i++) {
+    	item = generate_item();
+        insert(t, item);
+		free(item);
+    }
 
     print_table(t);
-    // free_table(t);
+    free_table(t);
     return 1;
 }
