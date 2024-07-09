@@ -8,7 +8,8 @@
 void print_item(Item *item) { printf("%s=%d\n", item->key, item->value); }
 
 void print_table(Table *t) {
-    for (int i = 0; i < t->size; i++)
+    printf("----\n");
+	for (int i = 0; i < t->size; i++)
         print_item(&t->items[i]);
     printf("----\n");
 }
@@ -31,12 +32,14 @@ char *generate_word(int len) {
     return word;
 }
 
-int generate_int(int max) { return rand() % max; }
+int generate_int(int max) { return (rand() % max) + 1; }
 
 Table *alloc_table(int size) {
-    Table *t = malloc(sizeof(Table));
-    if (!t)
+    Table *t = calloc(1, sizeof(Table));
+    if (!t) {
+		printf("alloc failed\n");
         return NULL;
+	}
 
     t->size = size;
     t->items = malloc(sizeof(Item) * t->size);
@@ -66,11 +69,15 @@ Item *generate_item() {
 }
 
 int hash(Table *t, Item *item) {
-    int sum = 0;
-    for (int i = 0; i < strlen(item->key); i++)
-        sum += (int)item->key[i];
+    /*
+        int sum = 0;
+    char *p = item->key;
+    while (*p != '\0')
+       sum += *p++;
+        return sum % t->size;
+        */
 
-    return sum % t->size;
+    return item->value % t->size;
 }
 
 bool linear_probe(Item *items, int size, Item *item, int idx) {
@@ -130,19 +137,22 @@ void free_table(Table *t) { free(t); }
 int main() {
 
     srand(time(NULL));
-    Table *t = alloc_table(2);
+    Table *t = alloc_table(5);
     if (!t) {
         printf("failed");
         return 1;
     }
     Item *item;
-
-    int n = 25;
-    for (int i = 0; i < n; i++) {
-        item = generate_item();
-        insert(t, item);
-        // free(item);
-    }
+    //item->key = malloc(sizeof(char));
+	item = generate_item();
+	print_item(item);
+	insert(t, item);
+    // int n = 25;
+    // for (int i = 0; i < n; i++) {
+    // item = generate_item();
+    //   insert(t, item);
+    // free(item);
+    //}
 
     print_table(t);
     // free_table(t);
