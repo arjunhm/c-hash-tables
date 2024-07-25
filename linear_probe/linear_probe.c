@@ -9,7 +9,7 @@ void print_item(Item *item) { printf("%s=%d\n", item->key, item->value); }
 
 void print_table(Table *t) {
     printf("----\n");
-	for (int i = 0; i < t->size; i++)
+    for (int i = 0; i < t->size; i++)
         print_item(&t->items[i]);
     printf("----\n");
 }
@@ -38,12 +38,12 @@ Table *alloc_table(int size) {
     Table *t = calloc(1, sizeof(Table));
     if (!t) {
         return NULL;
-	}
+    }
 
     t->size = size;
     t->items = calloc(1, sizeof(Item) * size);
     if (!t->items) {
-		free(t);
+        free(t);
         return NULL;
     }
 
@@ -69,13 +69,12 @@ Item *generate_item() {
 }
 
 int hash(Table *t, Item *item) {
-    
     int sum = 0;
     char *p = item->key;
     while (*p != '\0')
-       sum += *p++;
-        return sum % t->size;
-    //return item->value % t->size;
+        sum += *p++;
+    return sum % t->size;
+    // return item->value % t->size;
 }
 
 bool linear_probe(Item *items, int size, Item *item, int idx) {
@@ -85,7 +84,7 @@ bool linear_probe(Item *items, int size, Item *item, int idx) {
         if (items[idx].key == NULL) {
             items[idx].key = item->key;
             items[idx].value = item->value;
-            //printf("%d collisions for %s\n", c, item->key);
+            // printf("%d collisions for %s\n", c, item->key);
             return true;
         }
         c++;
@@ -114,7 +113,7 @@ void resize(Table *t) {
     }
 
     // assign new items to table
-	free(t->items);
+    free(t->items);
     t->items = new_items;
 }
 
@@ -131,10 +130,10 @@ bool insert(Table *t, Item *item) {
 }
 
 void free_table(Table *t) {
-	for (int i = 0; i < t->size; i++) 
-		free(t->items[i].key);
-	free(t->items);
-	free(t); 
+    for (int i = 0; i < t->size; i++)
+        free(t->items[i].key);
+    free(t->items);
+    free(t);
 }
 
 int main() {
@@ -144,13 +143,13 @@ int main() {
         printf("failed");
         return 1;
     }
-	Item *item;
-    
+    Item *item;
+
     int n = 25;
     for (int i = 0; i < n; i++) {
-    	item = generate_item();
+        item = generate_item();
         insert(t, item);
-		free(item);
+        free(item);
     }
 
     print_table(t);
